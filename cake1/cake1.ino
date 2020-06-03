@@ -1,7 +1,7 @@
 /**************************The reference materials *****************************
  
 i used function idea from these sites and added some little modifications
-function servoPulse() taken from
+functions servoPulse() and servoPulseV() taken from
 //https://forum.arduino.cc/index.php?topic=407596.0
 funcrion checkKeypadPressed taken from
 //http://anilarduino.blogspot.com/2015/05/interfacing-keypad-with-arduino.html
@@ -50,6 +50,14 @@ void servoPulse (char servo, int angle)
   digitalWrite(servo, LOW);
   delay(50); 
 }
+void servoPulseV (char servo, int angle)
+{
+  pwm = angle * 9 + 500;
+  digitalWrite(servo, HIGH);
+  delayMicroseconds(pwm); 
+  digitalWrite(servo, LOW);
+  delay(5); 
+}
 void moveMixer(int rotations,int d)
 {
   //one revolution === 8
@@ -66,15 +74,16 @@ void moveMixer(int rotations,int d)
 void moveMixerV(int rotations,int d)
 {
    for (angle = 0; angle <= 180; angle += 60)  {
-   servoPulse(pins[1], angle);  }
+   servoPulseV(pins[1], angle);  }
    prev=millis();
    int flag1=true;
   //one revolution === 8
   for (int i = 0; i < rotations*8; i++) {
     current= millis();
     if (flag1&&(unsigned long)(current - prev) >= 100) {
-      for (angle = 180; angle >= 0; angle -= 60)  {
-       servoPulse(pins[1], angle);  }
+     // for (angle = 180; angle >= 0; angle -= 60)  {
+      // servoPulseV(pins[1], angle);  }
+      servoPulseV(pins[1], 0);
        flag1=false;
     }
     digitalWrite(pins[4], HIGH);
@@ -101,14 +110,17 @@ void makeCake()
    delay(500);
  for (angle = 180; angle >= 0; angle -= 60)  {
    servoPulse(pins[0], angle);  }
+   delay(50);
 moveMixer(5,6);
-moveMixerV(4,6);
+moveMixerV(4,7);
+delay(50);
 //open sugar valve
 for (angle = 0; angle <= 180; angle += 60)  {
    servoPulse(pins[2], angle);  }
    delay(200);
  for (angle = 180; angle >= 0; angle -= 60)  {
    servoPulse(pins[2], angle);  }
+   delay(50);
  moveMixer(10,6); 
  for(int i=0;i<3;i++)
  {
